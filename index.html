@@ -966,8 +966,6 @@ function renderBody() {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div class="form-group" style="margin:0"><label>Weight (lbs)</label><input type="number" step="0.1" id="b-weight" placeholder="201.8"></div>
           <div class="form-group" style="margin:0"><label>Body fat %</label><input type="number" step="0.1" id="b-bf" placeholder="18.5"></div>
-          <div class="form-group" style="margin:0"><label>Waist (in)</label><input type="number" step="0.1" id="b-waist" placeholder="34"></div>
-          <div class="form-group" style="margin:0"><label>Arms (in)</label><input type="number" step="0.1" id="b-arms" placeholder="15"></div>
         </div>
         <div class="form-group" style="margin:0"><label>Notes</label><input type="text" id="b-notes" placeholder="Sleep, diet, energy this week..."></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -983,18 +981,16 @@ function renderBody() {
 
   if (history.length > 0) {
     html += `<div class="section-label" style="margin-top:4px">History</div><div class="card">
-      <div class="stat-history-row header">
+      <div class="stat-history-row header" style="grid-template-columns:1fr 1fr 1fr">
         <div style="font-size:11px;font-weight:600;color:var(--text3)">Date</div>
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-align:center">Weight</div>
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-align:center">BF%</div>
-        <div style="font-size:11px;font-weight:600;color:var(--text3);text-align:center">Waist</div>
       </div>`;
     history.slice(0,10).forEach(s => {
-      html += `<div class="stat-history-row">
+      html += `<div class="stat-history-row" style="grid-template-columns:1fr 1fr 1fr">
         <div style="font-size:12px;color:var(--text2)">${s.date?.slice(5)||'—'}</div>
         <div style="font-size:13px;font-weight:600;text-align:center">${s.weight||'—'}</div>
         <div style="font-size:13px;text-align:center;color:var(--text2)">${s.bf||'—'}</div>
-        <div style="font-size:13px;text-align:center;color:var(--text2)">${s.waist||'—'}</div>
       </div>`;
     });
     html += `</div>`;
@@ -1011,12 +1007,10 @@ function renderBody() {
 function saveBodyStats() {
   const w = document.getElementById('b-weight')?.value;
   const bf = document.getElementById('b-bf')?.value;
-  const waist = document.getElementById('b-waist')?.value;
-  const arms = document.getElementById('b-arms')?.value;
   const notes = document.getElementById('b-notes')?.value;
   const phase = parseInt(document.getElementById('b-phase')?.value || '0');
   if (!w && !bf) { showToast('Add weight or BF%'); return; }
-  DB.set(bodyKey(today()), { date: today(), weight: w, bf, waist, arms, notes, phase });
+  DB.set(bodyKey(today()), { date: today(), weight: w, bf, notes, phase });
   currentPhase = phase;
   DB.set('currentPhase', phase);
   document.getElementById('phase-badge').textContent = ['Phase 1','Phase 2','Phase 3'][phase];
