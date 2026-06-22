@@ -265,7 +265,7 @@ const PLAN = {
         { n:'Cable lateral raise', note:'SS with rear delt fly', sets:3, reps:'15', rest:'—' },
         { n:'Rear delt cable fly', note:'SS with lateral raise', sets:3, reps:'15', rest:'60s' },
         { n:'Tricep rope pushdown', note:'SS with overhead ext.', sets:3, reps:'12–15', rest:'—' },
-        { n:'Overhead cable tricep ext.', note:'Full stretch', sets:3, reps:'12–15', rest:'60s' },
+        { n:'Overhead cable tricep ext.', note:'Full stretch', sets:3, reps:'12–15', rest:'60s', p1drop:true },
       ]},
     ]
   },
@@ -288,8 +288,8 @@ const PLAN = {
         { n:'Seated cable row', note:'Narrow grip, squeeze', sets:3, reps:'10–12', rest:'75s' },
       ]},
       { name: 'Accessory', exercises: [
-        { n:'EZ bar curl', note:'SS with pulldown', sets:3, reps:'10–12', rest:'—' },
-        { n:'Straight-arm pulldown', note:'SS with curl', sets:3, reps:'12–15', rest:'60s' },
+        { n:'EZ bar curl', note:'Controlled, no swinging', sets:3, reps:'10–12', rest:'60s' },
+        { n:'Straight-arm pulldown', note:'Lat isolation', sets:3, reps:'12–15', rest:'60s', p1drop:true },
         { n:'Incline DB curl', note:'Max stretch', sets:3, reps:'10–12', rest:'60s' },
         { n:'Face pull (rope)', note:'Never skip — shoulder health', sets:3, reps:'15–20', rest:'45s' },
       ]},
@@ -311,7 +311,7 @@ const PLAN = {
       ]},
       { name: 'Accessory', exercises: [
         { n:'Leg curl', note:'Full ROM, controlled', sets:3, reps:'12–15', rest:'60s' },
-        { n:'Single-leg press', note:'Each side equal', sets:2, reps:'12 ea', rest:'60s' },
+        { n:'Single-leg press', note:'Each side equal', sets:2, reps:'12 ea', rest:'60s', p1drop:true },
         { n:'Standing calf raise', note:'Pause at stretch', sets:4, reps:'15–20', rest:'45s' },
       ]},
     ]
@@ -333,8 +333,8 @@ const PLAN = {
       { name: 'Accessory (SS pairs)', exercises: [
         { n:'EZ bar preacher curl', note:'SS with skull crusher', sets:3, reps:'10–12', rest:'—' },
         { n:'Skull crusher (EZ bar)', note:'SS with preacher curl', sets:3, reps:'10–12', rest:'60s' },
-        { n:'Hammer curl (DB)', note:'SS with tricep dip', sets:3, reps:'12', rest:'—' },
-        { n:'Bench tricep dip', note:'Bodyweight, to failure', sets:3, reps:'AMRAP', rest:'60s' },
+        { n:'Hammer curl (DB)', note:'SS with tricep dip', sets:3, reps:'12', rest:'—', p1drop:true },
+        { n:'Bench tricep dip', note:'Bodyweight, to failure', sets:3, reps:'AMRAP', rest:'60s', p1drop:true },
       ]},
     ]
   },
@@ -350,12 +350,11 @@ const PLAN = {
       { name: 'Main lifts', exercises: [
         { n:'Conventional deadlift', note:'Brace hard, belt optional', sets:4, reps:'4–6', rest:'3 min' },
         { n:'Bulgarian split squat (DB)', note:'Rear foot elevated', sets:3, reps:'8–10 ea', rest:'90s' },
-        { n:'Hip thrust (barbell)', note:'Full ext., squeeze top', sets:4, reps:'10–12', rest:'90s' },
         { n:'Stiff-leg DB deadlift', note:'Romanian, lighter', sets:3, reps:'12', rest:'75s' },
       ]},
       { name: 'Accessory', exercises: [
         { n:'Single-leg curl', note:'Each side equal', sets:3, reps:'12 ea', rest:'60s' },
-        { n:'Abductor machine', note:'Glute med — don\'t skip', sets:3, reps:'15–20', rest:'45s' },
+        { n:'Abductor machine', note:'Glute med — don\'t skip', sets:3, reps:'15–20', rest:'45s', p1drop:true },
         { n:'Seated calf raise', note:'Soleus focus', sets:4, reps:'15', rest:'45s' },
       ]},
     ]
@@ -523,11 +522,12 @@ function renderToday(dayKey) {
 
   let cardio = day.cardio?.all || (day.cardio && day.cardio[currentPhase]) || '';
 
+  const sessionTime = (currentPhase === 0 && day.time === '75 min') ? '60 min' : day.time;
   let html = `
     <div class="session-banner ${bannerClass}">
       <div>
         <div class="banner-title">${day.name}</div>
-        <div class="banner-sub">${day.desc} · ${day.time}</div>
+        <div class="banner-sub">${day.desc} · ${sessionTime}</div>
       </div>
       <span class="badge ${day.badge}">${day.name}</span>
     </div>`;
@@ -538,10 +538,13 @@ function renderToday(dayKey) {
 
   // Exercises
   day.sections.forEach((sec, si) => {
+    const visible = sec.exercises.filter(ex => !(currentPhase === 0 && ex.p1drop));
+    if (visible.length === 0) return;
     if (si > 0) html += `<div class="section-divider">${sec.name}</div>`;
     else html += `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding-bottom:8px">${sec.name}</div>`;
 
     sec.exercises.forEach((ex, ei) => {
+      if (currentPhase === 0 && ex.p1drop) return;
       const exKey = `${si}_${ei}`;
       const saved = currentSessionData[exKey] || {};
       const sets = saved.sets || Array.from({length: ex.sets}, () => ({w:'',r:'',done:false}));
@@ -895,13 +898,14 @@ function renderPlanContent() {
   let html = '';
   DAY_KEYS.forEach(k => {
     const day = PLAN[k];
+    const planTime = (planPhaseVal === 0 && day.time === '75 min') ? '60 min' : day.time;
     html += `<div style="margin-bottom:12px">
       <div class="card">
         <div class="plan-day-row" onclick="togglePlanDay('${k}')">
           <div class="plan-day-dot" style="background:${day.color}"></div>
           <div class="plan-day-info">
             <div class="plan-day-name">${day.label} — ${day.name}</div>
-            <div class="plan-day-desc">${day.desc}${day.time?' · '+day.time:''}</div>
+            <div class="plan-day-desc">${day.desc}${planTime?' · '+planTime:''}</div>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="plan-chevron-${k}"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
@@ -927,8 +931,10 @@ function renderPlanContent() {
       }
       html += `<div class="plan-col-hdr"><div>Exercise</div><div>Sets</div><div>Reps</div><div>Rest</div></div>`;
       day.sections.forEach(sec => {
+        const visible = sec.exercises.filter(ex => !(planPhaseVal === 0 && ex.p1drop));
+        if (visible.length === 0) return;
         html += `<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:10px 0 4px">${sec.name}</div>`;
-        sec.exercises.forEach(ex => {
+        visible.forEach(ex => {
           html += `<div class="plan-ex-row">
             <div><div class="plan-ex-name">${ex.n}</div><div class="plan-ex-note">${ex.note}</div></div>
             <div class="plan-ex-val">${ex.sets}</div>
@@ -1001,7 +1007,72 @@ function renderBody() {
     </div>`;
   }
 
+  // Data backup card
+  html += `<div class="section-label" style="margin-top:8px">Data backup</div>
+    <div class="card">
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;color:var(--text2);line-height:1.5">
+          Your data is saved on this phone. Export a backup before updating the app or clearing Safari data, then import it back if anything is lost.
+        </div>
+        <button class="btn btn-teal" onclick="exportData()">Export backup file</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">Import backup file</button>
+        <input type="file" id="import-file" accept=".json,application/json" style="display:none" onchange="importData(event)">
+      </div>
+    </div>`;
+
   el.innerHTML = html;
+}
+
+function exportData() {
+  try {
+    const data = {};
+    const prefixes = ['session_','body_','activity_','prs','currentPhase'];
+    Object.keys(localStorage).forEach(k => {
+      if (prefixes.some(p => k === p || k.startsWith(p))) {
+        data[k] = localStorage.getItem(k);
+      }
+    });
+    const payload = { app: 'workout-tracker', exported: new Date().toISOString(), data };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `workout-backup-${today()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('Backup exported');
+  } catch (e) {
+    showToast('Export failed');
+  }
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const payload = JSON.parse(e.target.result);
+      if (!payload.data || payload.app !== 'workout-tracker') {
+        showToast('Not a valid backup file');
+        return;
+      }
+      let count = 0;
+      Object.keys(payload.data).forEach(k => {
+        localStorage.setItem(k, payload.data[k]);
+        count++;
+      });
+      currentPhase = parseInt(DB.get('currentPhase')) || 0;
+      showToast(`Restored ${count} items`);
+      renderBody();
+    } catch (err) {
+      showToast('Could not read backup file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
 function saveBodyStats() {
