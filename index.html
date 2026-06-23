@@ -509,6 +509,10 @@ function renderToday(dayKey) {
           </div>
           <div style="width:100%"><label>Notes</label><input type="text" id="run-notes" placeholder="How it felt..."></div>
           <button class="btn btn-primary" onclick="saveRun('${dayKey}')">Save run</button>
+          <button class="btn btn-teal" onclick="shareRun('${dayKey}')" style="margin-top:8px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            Share run
+          </button>
         </div>
       </div>`;
     loadExistingSession(dayKey);
@@ -589,11 +593,24 @@ function renderToday(dayKey) {
       <strong>Cardio:</strong> ${cardio}</div>`;
   }
 
+  // Session notes
+  const savedNotes = existingSession.notes || '';
+  html += `<div style="margin-top:14px">
+    <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">Session notes — energy, sleep, how lifts felt</label>
+    <textarea id="session-notes" placeholder="e.g. Slept 7hrs, energy good, bench felt strong, right shoulder slightly tight..."
+      onchange="updateSessionNotes('${dayKey}', this.value)"
+      style="width:100%;font-size:14px;border:1px solid var(--line2);border-radius:var(--radius-sm);padding:10px;background:var(--bg3);color:var(--text);resize:vertical;min-height:70px;font-family:inherit;outline:none">${savedNotes}</textarea>
+  </div>`;
+
   html += `<div class="finish-bar" style="margin-top:16px">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
       <button class="btn btn-ghost" onclick="clearDaySession('${dayKey}')">Clear</button>
       <button class="btn btn-primary" onclick="saveDaySession('${dayKey}')">Save session</button>
     </div>
+    <button class="btn btn-teal" onclick="shareSession('${dayKey}')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      Share session
+    </button>
   </div>`;
 
   content.innerHTML = html;
@@ -660,10 +677,17 @@ function autoSaveSession(dayKey) {
   DB.set(key, { ...existing, exercises: currentSessionData, dayKey, date: today() });
 }
 
+function updateSessionNotes(dayKey, val) {
+  const key = sessionKey(today(), dayKey);
+  const existing = DB.get(key) || {};
+  DB.set(key, { ...existing, notes: val, exercises: currentSessionData, dayKey, date: today() });
+}
+
 function saveDaySession(dayKey) {
   const key = sessionKey(today(), dayKey);
   const existing = DB.get(key) || {};
-  DB.set(key, { ...existing, exercises: currentSessionData, dayKey, date: today(), saved: true });
+  const notes = document.getElementById('session-notes')?.value || existing.notes || '';
+  DB.set(key, { ...existing, exercises: currentSessionData, notes, dayKey, date: today(), saved: true });
   updatePRs(dayKey);
   showToast('Session saved');
 }
@@ -690,6 +714,93 @@ function saveRun(dayKey) {
   const key = sessionKey(today(), dayKey);
   DB.set(key, { dayKey, date: today(), run: { dist, dur, hr, effort, notes }, saved: true });
   showToast('Run saved');
+}
+
+function shareSession(dayKey) {
+  // Pull latest notes from the field if present
+  const liveNotes = document.getElementById('session-notes')?.value;
+  if (liveNotes !== undefined) updateSessionNotes(dayKey, liveNotes);
+
+  const day = PLAN[dayKey];
+  const phaseLabel = ['Phase 1','Phase 2','Phase 3'][currentPhase];
+  const lines = [`${day.name} — ${formatDate(today())} (${phaseLabel})`, ''];
+
+  let anyLogged = false;
+  day.sections.forEach((sec, si) => {
+    const secLines = [];
+    sec.exercises.forEach((ex, ei) => {
+      if (currentPhase === 0 && ex.p1drop) return;
+      const exKey = `${si}_${ei}`;
+      const data = currentSessionData[exKey];
+      if (!data || !data.sets) return;
+      const setStrs = data.sets
+        .filter(s => s.w || s.r)
+        .map(s => `${s.w||'?'}${s.r?'×'+s.r:''}`);
+      if (setStrs.length) {
+        secLines.push(`  ${ex.n}: ${setStrs.join(', ')}`);
+        anyLogged = true;
+      }
+    });
+    if (secLines.length) {
+      lines.push(`${sec.name}:`);
+      lines.push(...secLines);
+      lines.push('');
+    }
+  });
+
+  const notes = document.getElementById('session-notes')?.value;
+  if (notes) { lines.push('Notes: ' + notes); }
+
+  if (!anyLogged && !notes) {
+    showToast('Log some sets first');
+    return;
+  }
+
+  const text = lines.join('\n').trim();
+  copyToClipboard(text);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('Copied — paste into chat'))
+      .catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('Copied — paste into chat');
+  } catch (e) {
+    showToast('Copy failed — long-press to select');
+  }
+  document.body.removeChild(ta);
+}
+
+function shareRun(dayKey) {
+  const dist = document.getElementById('run-dist')?.value;
+  const dur = document.getElementById('run-dur')?.value;
+  const hr = document.getElementById('run-hr')?.value;
+  const effort = document.getElementById('run-effort')?.value;
+  const notes = document.getElementById('run-notes')?.value;
+  if (!dist && !dur) { showToast('Log the run first'); return; }
+  const phaseLabel = ['Phase 1','Phase 2','Phase 3'][currentPhase];
+  const lines = [`Run — ${formatDate(today())} (${phaseLabel})`, ''];
+  if (dist) lines.push(`Distance: ${dist} mi`);
+  if (dur) lines.push(`Duration: ${dur} min`);
+  if (hr) lines.push(`Avg HR: ${hr} bpm`);
+  if (effort) lines.push(`Effort: ${effort}/10`);
+  if (notes) lines.push(`Notes: ${notes}`);
+  copyToClipboard(lines.join('\n').trim());
 }
 
 // ── PR TRACKING ───────────────────────────────────────────────────────────────
