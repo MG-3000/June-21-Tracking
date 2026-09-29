@@ -257,13 +257,12 @@ const PLAN = {
       ]},
       { name: 'Main lifts', exercises: [
         { n:'Flat barbell bench press', note:'2s descent, drive hard', sets:4, reps:'6–8', rest:'2 min' },
-        { n:'Barbell overhead press', note:'Clean from rack. Start conservative ~95–115.', sets:4, reps:'8–10', rest:'90s' },
+        { n:'Barbell overhead press', note:'Bar to upper chest, full lockout every rep', sets:4, reps:'6–10', rest:'90s' },
         { n:'Incline DB press', note:'Elbows 45°', sets:3, reps:'10–12', rest:'75s' },
-        { n:'Arnold press', note:'Supinate fully on way up', sets:3, reps:'10–12', rest:'75s' },
+        { n:'Cable lateral raise', note:'Side-delt priority. Strict, one machine, add reps before weight', sets:4, reps:'12–20', rest:'60s' },
       ]},
       { name: 'Accessory (SS pairs)', exercises: [
-        { n:'Cable lateral raise', note:'SS with rear delt fly', sets:3, reps:'15', rest:'—' },
-        { n:'Rear delt cable fly', note:'SS with lateral raise', sets:3, reps:'15', rest:'60s' },
+        { n:'Rear delt cable fly', note:'Rear-delt priority. Slow, no swinging', sets:3, reps:'15–20', rest:'45s' },
         { n:'Tricep rope pushdown', note:'SS with overhead ext.', sets:3, reps:'12–15', rest:'—' },
         { n:'Overhead cable tricep ext.', note:'Full stretch', sets:3, reps:'12–15', rest:'60s', p1drop:true },
       ]},
@@ -282,8 +281,8 @@ const PLAN = {
         { n:'Scapular pull-up', note:'Blade activation', sets:2, reps:'10', rest:'30s' },
       ]},
       { name: 'Main lifts', exercises: [
-        { n:'Weighted pull-up', note:'Full dead hang', sets:4, reps:'5–8', rest:'2 min' },
-        { n:'Pendlay row', note:'Dead-stop each rep', sets:4, reps:'6–8', rest:'90s' },
+        { n:'Weighted pull-up', note:'STRAPS. Dead hang to chin clearly over', sets:4, reps:'5–8', rest:'2 min' },
+        { n:'Pendlay row', note:'STRAPS. 3-wk block at 10–12, lighter, rigid brace — then back to 6–8', sets:3, reps:'10–12', rest:'90s' },
         { n:'Chest-supported DB row', note:'Full stretch at bottom', sets:3, reps:'10–12', rest:'75s' },
         { n:'Seated cable row', note:'Narrow grip, squeeze', sets:3, reps:'10–12', rest:'75s' },
       ]},
@@ -292,6 +291,7 @@ const PLAN = {
         { n:'Straight-arm pulldown', note:'Lat isolation', sets:3, reps:'12–15', rest:'60s', p1drop:true },
         { n:'Incline DB curl', note:'Max stretch', sets:3, reps:'10–12', rest:'60s' },
         { n:'Face pull (rope)', note:'Never skip — shoulder health', sets:3, reps:'15–20', rest:'45s' },
+        { n:'Cable lateral raise', note:'Side-delt volume. Strict, same machine as Push', sets:3, reps:'12–20', rest:'45s' },
       ]},
     ]
   },
@@ -317,7 +317,7 @@ const PLAN = {
     ]
   },
   fri: { label: 'Fri', name: 'Upper B', type: 'upper', color: '#f06a50', badge: 'badge-coral',
-    desc: 'Chest · Back · Arms', time: '75 min',
+    desc: 'Chest · Back · Shoulders · Arms', time: '75 min',
     cardio: { all: '15 min LISS stairmaster — moderate pace' },
     sections: [
       { name: 'Warm-up', exercises: [
@@ -326,15 +326,15 @@ const PLAN = {
       ]},
       { name: 'Main lifts', exercises: [
         { n:'Incline barbell press', note:'30–40°, controlled', sets:4, reps:'8–10', rest:'90s' },
-        { n:'Barbell bent-over row', note:'Overhand, chest parallel', sets:4, reps:'8–10', rest:'90s' },
+        { n:'Barbell bent-over row', note:'STRAPS. 3-wk block at 10–12, full range every rep — then back to 8–10', sets:3, reps:'10–12', rest:'90s' },
         { n:'Cable fly (low-to-high)', note:'Full pec stretch', sets:3, reps:'12–15', rest:'75s' },
         { n:'Single-arm DB row', note:'Elbow past hip', sets:3, reps:'10 ea', rest:'60s' },
       ]},
       { name: 'Accessory (SS pairs)', exercises: [
-        { n:'EZ bar preacher curl', note:'SS with skull crusher', sets:3, reps:'10–12', rest:'—' },
+        { n:'EZ bar preacher curl', note:'SS with skull crusher. Stop short of painful bottom stretch', sets:3, reps:'10–12', rest:'—' },
         { n:'Skull crusher (EZ bar)', note:'SS with preacher curl', sets:3, reps:'10–12', rest:'60s' },
-        { n:'Hammer curl (DB)', note:'SS with tricep dip', sets:3, reps:'12', rest:'—', p1drop:true },
-        { n:'Bench tricep dip', note:'Bodyweight, to failure', sets:3, reps:'AMRAP', rest:'60s', p1drop:true },
+        { n:'Cable lateral raise', note:'SS with rear delt fly. Strict, same machine', sets:3, reps:'12–20', rest:'—' },
+        { n:'Rear delt cable fly', note:'SS with lateral raise. Slow', sets:3, reps:'15–20', rest:'60s' },
       ]},
     ]
   },
