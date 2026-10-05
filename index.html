@@ -67,7 +67,7 @@
   .badge-coral { background: var(--coral-bg); color: var(--coral); }
   input[type=text], input[type=number], textarea, select {
     background: var(--bg3); border: 1px solid var(--line2); border-radius: var(--radius-sm);
-    color: var(--text); font-size: 15px; padding: 10px 12px; width: 100%;
+    color: var(--text); font-size: 16px; padding: 10px 12px; width: 100%;
     font-family: inherit; outline: none; -webkit-appearance: none;
   }
   input[type=text]:focus, input[type=number]:focus, textarea:focus, select:focus { border-color: var(--purple); }
@@ -108,7 +108,7 @@
   .ex-body.open { display: block; }
   .sets-grid { display: grid; grid-template-columns: 40px 1fr 1fr auto; gap: 8px; align-items: center; margin-top: 12px; }
   .set-label { font-size: 12px; color: var(--text3); font-weight: 600; text-align: center; }
-  .set-input { background: var(--bg3); border: 1px solid var(--line2); border-radius: var(--radius-sm); color: var(--text); font-size: 15px; padding: 9px 10px; text-align: center; outline: none; font-family: inherit; -webkit-appearance: none; }
+  .set-input { background: var(--bg3); border: 1px solid var(--line2); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; padding: 9px 10px; text-align: center; outline: none; font-family: inherit; -webkit-appearance: none; }
   .set-input:focus { border-color: var(--purple); }
   .set-done-btn { width: 32px; height: 38px; border-radius: var(--radius-sm); border: 1px solid var(--line2); background: var(--bg3); color: var(--text3); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .set-done-btn.done { background: var(--teal-bg); border-color: var(--teal); color: var(--teal); }
@@ -259,7 +259,7 @@ const PLAN = {
         { n:'Flat barbell bench press', note:'2s descent, drive hard', sets:4, reps:'6–8', rest:'2 min' },
         { n:'Barbell overhead press', note:'Bar to upper chest, full lockout every rep', sets:4, reps:'6–10', rest:'90s' },
         { n:'Incline DB press', note:'Elbows 45°', sets:3, reps:'10–12', rest:'75s' },
-        { n:'Cable lateral raise', note:'Side-delt priority. Strict, one machine, add reps before weight', sets:4, reps:'12–20', rest:'60s' },
+        { n:'Lateral raise (machine)', note:'Side-delt priority. Same machine every day, 1-sec pause at top', sets:4, reps:'10–15', rest:'60s' },
       ]},
       { name: 'Accessory (SS pairs)', exercises: [
         { n:'Rear delt cable fly', note:'Rear-delt priority. Slow, no swinging', sets:3, reps:'15–20', rest:'45s' },
@@ -291,7 +291,7 @@ const PLAN = {
         { n:'Straight-arm pulldown', note:'Lat isolation', sets:3, reps:'12–15', rest:'60s', p1drop:true },
         { n:'Incline DB curl', note:'Max stretch', sets:3, reps:'10–12', rest:'60s' },
         { n:'Face pull (rope)', note:'Never skip — shoulder health', sets:3, reps:'15–20', rest:'45s' },
-        { n:'Cable lateral raise', note:'Side-delt volume. Strict, same machine as Push', sets:3, reps:'12–20', rest:'45s' },
+        { n:'Lateral raise (machine)', note:'Side-delt volume. Same machine as Push', sets:3, reps:'10–15', rest:'45s' },
       ]},
     ]
   },
@@ -333,7 +333,7 @@ const PLAN = {
       { name: 'Accessory (SS pairs)', exercises: [
         { n:'EZ bar preacher curl', note:'SS with skull crusher. Stop short of painful bottom stretch', sets:3, reps:'10–12', rest:'—' },
         { n:'Skull crusher (EZ bar)', note:'SS with preacher curl', sets:3, reps:'10–12', rest:'60s' },
-        { n:'Cable lateral raise', note:'SS with rear delt fly. Strict, same machine', sets:3, reps:'12–20', rest:'—' },
+        { n:'Lateral raise (machine)', note:'SS with rear delt fly. Same machine as Push', sets:3, reps:'10–15', rest:'—' },
         { n:'Rear delt cable fly', note:'SS with lateral raise. Slow', sets:3, reps:'15–20', rest:'60s' },
       ]},
     ]
@@ -502,10 +502,10 @@ function renderToday(dayKey) {
         <div class="card-row" style="flex-direction:column;align-items:flex-start;gap:10px">
           <div style="font-size:13px;font-weight:600">Log this run</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%">
-            <div><label>Distance (miles)</label><input type="number" step="0.1" id="run-dist" placeholder="e.g. 1.2"></div>
-            <div><label>Duration (min)</label><input type="number" id="run-dur" placeholder="e.g. 25"></div>
-            <div><label>Avg HR (bpm)</label><input type="number" id="run-hr" placeholder="e.g. 135"></div>
-            <div><label>Effort (1–10)</label><input type="number" min="1" max="10" id="run-effort" placeholder="e.g. 6"></div>
+            <div><label>Distance (miles)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" step="0.1" id="run-dist" placeholder="e.g. 1.2"></div>
+            <div><label>Duration (min)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="run-dur" placeholder="e.g. 25"></div>
+            <div><label>Avg HR (bpm)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="run-hr" placeholder="e.g. 135"></div>
+            <div><label>Effort (1–10)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" min="1" max="10" id="run-effort" placeholder="e.g. 6"></div>
           </div>
           <div style="width:100%"><label>Notes</label><input type="text" id="run-notes" placeholder="How it felt..."></div>
           <button class="btn btn-primary" onclick="saveRun('${dayKey}')">Save run</button>
@@ -574,9 +574,9 @@ function renderToday(dayKey) {
             <div class="sets-col-hdr"></div>
             ${sets.map((s,i) => `
               <div class="set-label" style="color:var(--text3)">S${i+1}</div>
-              <input class="set-input" type="number" placeholder="lbs" value="${s.w||''}"
+              <input class="set-input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="lbs" value="${s.w||''}"
                 onchange="updateSet('${dayKey}','${exKey}',${i},'w',this.value)" id="sw_${exKey}_${i}">
-              <input class="set-input" type="number" placeholder="reps" value="${s.r||''}"
+              <input class="set-input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="reps" value="${s.r||''}"
                 onchange="updateSet('${dayKey}','${exKey}',${i},'r',this.value)" id="sr_${exKey}_${i}">
               <div class="set-done-btn ${s.done?'done':''}" onclick="toggleSetDone('${dayKey}','${exKey}',${i},this)">
                 ${s.done?'✓':'○'}
@@ -599,7 +599,7 @@ function renderToday(dayKey) {
     <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">Session notes — energy, sleep, how lifts felt</label>
     <textarea id="session-notes" placeholder="e.g. Slept 7hrs, energy good, bench felt strong, right shoulder slightly tight..."
       onchange="updateSessionNotes('${dayKey}', this.value)"
-      style="width:100%;font-size:14px;border:1px solid var(--line2);border-radius:var(--radius-sm);padding:10px;background:var(--bg3);color:var(--text);resize:vertical;min-height:70px;font-family:inherit;outline:none">${savedNotes}</textarea>
+      style="width:100%;font-size:16px;border:1px solid var(--line2);border-radius:var(--radius-sm);padding:10px;background:var(--bg3);color:var(--text);resize:vertical;min-height:70px;font-family:inherit;outline:none">${savedNotes}</textarea>
   </div>`;
 
   html += `<div class="finish-bar" style="margin-top:16px">
@@ -660,9 +660,9 @@ function addSet(dayKey, exKey, si, ei) {
   const setIdx = newIdx;
   const rowsHTML = `
     <div class="set-label" style="color:var(--text3)">S${setIdx+1}</div>
-    <input class="set-input" type="number" placeholder="lbs"
+    <input class="set-input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="lbs"
       onchange="updateSet('${dayKey}','${exKey}',${setIdx},'w',this.value)" id="sw_${exKey}_${setIdx}">
-    <input class="set-input" type="number" placeholder="reps"
+    <input class="set-input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="reps"
       onchange="updateSet('${dayKey}','${exKey}',${setIdx},'r',this.value)" id="sr_${exKey}_${setIdx}">
     <div class="set-done-btn" onclick="toggleSetDone('${dayKey}','${exKey}',${setIdx},this)">○</div>`;
   grid.insertAdjacentHTML('beforeend', rowsHTML);
@@ -1081,8 +1081,8 @@ function renderBody() {
     <div class="card">
       <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="form-group" style="margin:0"><label>Weight (lbs)</label><input type="number" step="0.1" id="b-weight" placeholder="201.8"></div>
-          <div class="form-group" style="margin:0"><label>Body fat %</label><input type="number" step="0.1" id="b-bf" placeholder="18.5"></div>
+          <div class="form-group" style="margin:0"><label>Weight (lbs)</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" step="0.1" id="b-weight" placeholder="201.8"></div>
+          <div class="form-group" style="margin:0"><label>Body fat %</label><input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" step="0.1" id="b-bf" placeholder="18.5"></div>
         </div>
         <div class="form-group" style="margin:0"><label>Notes</label><input type="text" id="b-notes" placeholder="Sleep, diet, energy this week..."></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -1236,11 +1236,11 @@ function renderActivity() {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div class="form-group" style="margin:0">
             <label>Duration (min)</label>
-            <input type="number" id="act-duration" placeholder="e.g. 60">
+            <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" id="act-duration" placeholder="e.g. 60">
           </div>
           <div class="form-group" style="margin:0">
             <label>Effort (1–10)</label>
-            <input type="number" min="1" max="10" id="act-effort" placeholder="e.g. 7">
+            <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false" min="1" max="10" id="act-effort" placeholder="e.g. 7">
           </div>
         </div>
         <div class="form-group" style="margin:0">
